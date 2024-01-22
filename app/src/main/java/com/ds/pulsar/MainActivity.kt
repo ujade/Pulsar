@@ -4,6 +4,7 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentScope
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContent {
             PulsarTheme {
                 // A surface container using the 'background' color from the theme
