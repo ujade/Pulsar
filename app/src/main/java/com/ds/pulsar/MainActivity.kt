@@ -19,8 +19,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BatteryStd
-import androidx.compose.material.icons.filled.Contactless
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -124,6 +123,7 @@ private fun MainUI() {
                 .padding(6.dp)
                 .size(32.dp)
                 .clickable { navController.navigate(Screens.devList) })
+        //region Digits
         val dm = LocalContext.current.resources.displayMetrics
         val pxPerSp = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_SP,
@@ -190,10 +190,20 @@ private fun MainUI() {
                     delay(200)
                 }
             }
-            val startTime = rememberSaveable{ System.currentTimeMillis() }
+            val currentSeconds = {
+                System.currentTimeMillis() / 1000
+            }
+            val icons = arrayOf(Icons.Default.Pause, Icons.Default.PlayArrow )
+            val iconNdx = rememberSaveable{ mutableStateOf(0) }
+            val startTime = rememberSaveable{ mutableStateOf( currentSeconds() ) }
+            val accumulatedTime = rememberSaveable{ mutableStateOf( 0L ) }
             LaunchedEffect(null ) {
                 while (true) {
-                    val td = (System.currentTimeMillis() - startTime) /1000
+                    delay(950)
+                    if ( iconNdx.value != 0 )
+                        continue
+                    val td = accumulatedTime.value +
+                            currentSeconds() - startTime.value
                     val h = td / 3600
                     val m = (td % 3600) / 60
                     val s = td % 60
@@ -201,13 +211,38 @@ private fun MainUI() {
                         time.value = "%02d:%02d".format(m ,s)
                     else
                         time.value = "%d:%02d:%02d".format(h, m ,s)
-                    delay(1000)
                 }
             }
             Text(text = pulse.value, fontSize = biggerTextSize.sp)
             Text(text = time.value, fontSize = smallerTextSize.sp)
+            Row(){
+                val mdf = Modifier
+                    .padding(horizontal = 32.dp, vertical = 6.dp)
+                    .size(32.dp)
+                Icon(
+                    Icons.Default.RestartAlt,
+                    contentDescription = "Reset",
+                    modifier = mdf.clickable {
+                            accumulatedTime.value = 0
+                            startTime.value = currentSeconds()
+                            iconNdx.value = 0
+                        })
+                var icon = icons[iconNdx.value]
+                Icon(
+                    icon,
+                    contentDescription = "Pause",
+                    modifier = mdf.clickable {
+                            if (iconNdx.value == 0)
+                                accumulatedTime.value += currentSeconds() - startTime.value
+                            else
+                                startTime.value = currentSeconds()
+                            iconNdx.value = ++iconNdx.value % icons.size
+                            icon = icons[iconNdx.value]
+                        })
+            }
             AnimatedVisibility(
                 visible = battery.isNotEmpty(),
+                modifier = Modifier.padding( 6.dp ),
                 enter = fadeIn(animationSpec = tween(2000))
             ){
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -221,6 +256,7 @@ private fun MainUI() {
                 }
             }
         }
+        // endregion
     }
 }
 
