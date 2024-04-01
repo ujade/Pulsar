@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattCharacteristic.*
 import com.beepiz.bluetooth.gattcoroutines.GattConnection
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -20,13 +21,14 @@ val heartRateStream: HeartRateStream by lazy{
 }
 
 class HeartRateStream {
+    private var devAddres: String by PreferenceDelegate("dev_addres", "")
+    var lastScanTime: Long = 0
     fun setSource( dev:  BluetoothDevice){
         assert(dev.address != null)
         devAddres = dev.address
         this.dev = dev
     }
 
-    var devAddres: String by PreferenceDelegate("dev_addres", "")
     private var dev: BluetoothDevice? = null
     get() {
         if ( field == null) {
@@ -51,10 +53,20 @@ class HeartRateStream {
         var characHr: BluetoothGattCharacteristic? = null
         try {
             var lastTimeDataReceived = currentTimeMillis()
-            CoroutineScope(currentCoroutineContext()).launch{
+            CoroutineScope(currentCoroutineContext()).launch {
+                val timeoutMillis: Long = 7_000
+                val currTime = currentTimeMillis()
+                if (currTime - lastScanTime > 10_000) {
+                    lastScanTime = currTime
+                    launch {
+                        withTimeoutOrNull(timeoutMillis) {
+                            searchForBleDevices().collect()
+                        }
+                    }
+                }
                 while (true) {
                     delay(1_000)
-                    if (currentTimeMillis() - lastTimeDataReceived > 5_000)
+                    if (currentTimeMillis() - lastTimeDataReceived > timeoutMillis)
                         throw TimeoutException()
                 }
             }
@@ -122,10 +134,6 @@ class HeartRateStream {
             }
         }
         finally {
-            if (characHr != null){
-                deviceConnection.setCharacteristicNotificationsEnabledOnRemoteDevice(characHr, false)
-                sleep(100) // let it go through before closing the connection
-            }
             deviceConnection.close() // Also triggers disconnect by default.
             println("device collection finished")
         }

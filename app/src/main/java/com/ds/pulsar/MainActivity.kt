@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.beepiz.bluetooth.gattcoroutines.ConnectionClosedException
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -182,13 +183,15 @@ private fun MainUI() {
                             }
                         }
                     } catch (e: Exception) {
-                        if (e is CancellationException)
+                        if (e is CancellationException && e !is ConnectionClosedException) {
                             throw e
+                        }
                         if (e !is TimeoutException) {
                             println("Error collecting data from device: $e")
                             e.printStackTrace()
                         }
                     }
+                    println("retrying to connect")
                     delay(200)
                 }
             }
