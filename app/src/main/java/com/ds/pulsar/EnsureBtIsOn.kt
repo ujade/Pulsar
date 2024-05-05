@@ -10,8 +10,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
@@ -68,7 +68,7 @@ fun EnsureBtIsOn(whenBtIsOn: @Composable ()->Unit ) {
         {
             val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
             Text("Got to enable Bluetooth", Modifier.padding(all = 10.dp))
-            Button(onClick = { launcher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)) }) {
+            ElevatedButton(onClick = { launcher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)) }) {
                 Text("Aye, let's do it")
             }
         }

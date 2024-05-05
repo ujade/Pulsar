@@ -5,8 +5,8 @@ import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +39,7 @@ fun EnsurePermissionsGranted( whenGrantedContend: @Composable () -> Unit ){
             horizontalAlignment = Alignment.CenterHorizontally)
         {
             Text("The permissions are required for this app to function.", Modifier.padding(all = 10.dp))
-            Button(onClick = { requiredPermissions.launchMultiplePermissionRequest() }) {
+            ElevatedButton(onClick = { requiredPermissions.launchMultiplePermissionRequest() }) {
                 Text(stringResource(R.string.request_permissions))
             }
         }

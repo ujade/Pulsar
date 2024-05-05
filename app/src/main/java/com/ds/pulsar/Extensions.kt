@@ -6,6 +6,6 @@ import java.util.*
 
 
 val String.uuid: UUID get() = UUID.fromString(this)
-
+//TODO: deprecated
 val Int.spToDp: Dp get() = Dp(this.toFloat() * Resources.getSystem().displayMetrics.scaledDensity)
 

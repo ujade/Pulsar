@@ -7,20 +7,20 @@ import android.util.TypedValue
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.EaseInOutQuad
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -43,8 +43,6 @@ import java.util.concurrent.TimeoutException
 import kotlin.math.abs
 
 
-//val AppNavigator = staticCompositionLocalOf<NavHostController> {  }
-
 private lateinit
 var navController_: NavHostController
 val navController by ::navController_
@@ -57,7 +55,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PulsarTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     navController_ = rememberAnimatedNavController()
                     AnimatedNavHost(navController = navController, startDestination = Screens.main) {
                         val durationMs = 700
@@ -66,13 +64,13 @@ class MainActivity : ComponentActivity() {
                             Screens.main,
                             enterTransition = {
                                 slideIntoContainer(
-                                    AnimatedContentScope.SlideDirection.Left,
+                                    AnimatedContentTransitionScope.SlideDirection.Left,
                                     animationSpec = animSpec
                                 )
                             },
                             exitTransition = {
                                 slideOutOfContainer(
-                                    AnimatedContentScope.SlideDirection.Right,
+                                    AnimatedContentTransitionScope.SlideDirection.Right,
                                     animationSpec = animSpec
                                 )
                             }) { MainScreen() }
@@ -80,13 +78,13 @@ class MainActivity : ComponentActivity() {
                             Screens.devList,
                             enterTransition = {
                                 slideIntoContainer(
-                                    AnimatedContentScope.SlideDirection.Right,
+                                    AnimatedContentTransitionScope.SlideDirection.Right,
                                     animationSpec = animSpec
                                 )
                             },
                             exitTransition = {
                                 slideOutOfContainer(
-                                    AnimatedContentScope.SlideDirection.Left,
+                                    AnimatedContentTransitionScope.SlideDirection.Left,
                                     animationSpec = animSpec
                                 )
                             }) { DeviceDiscoverScreen() }
@@ -118,14 +116,17 @@ fun MainScreen() {
 @Composable
 private fun MainUI() {
     BoxWithConstraints {
-        Icon(
-            Icons.Default.Contactless,
-            contentDescription = "List of available BLE devices",
+        ElevatedButton(
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(6.dp)
-                .size(32.dp)
-                .clickable { navController.navigate(Screens.devList) })
+                .padding(6.dp),
+            onClick = { navController.navigate(Screens.devList) }
+        ){
+            Icon(
+                Icons.Default.Contactless,
+                contentDescription = "List of available BLE devices",
+            )
+        }
         //region Digits
         val dm = LocalContext.current.resources.displayMetrics
         val pxPerSp = TypedValue.applyDimension(
@@ -223,27 +224,32 @@ private fun MainUI() {
             Row(){
                 val mdf = Modifier
                     .padding(horizontal = 32.dp, vertical = 6.dp)
-                    .size(32.dp)
-                Icon(
-                    Icons.Default.RestartAlt,
-                    contentDescription = "Reset",
-                    modifier = mdf.clickable {
+                ElevatedButton(
+                    modifier = mdf,
+                    onClick = {
                             accumulatedTime.value = 0
                             startTime.value = currentSeconds()
                             iconNdx.value = 0
-                        })
+                }){
+                    Icon(
+                        Icons.Default.RestartAlt,
+                        contentDescription = "Reset")
+                }
                 var icon = icons[iconNdx.value]
-                Icon(
-                    icon,
-                    contentDescription = "Pause",
-                    modifier = mdf.clickable {
-                            if (iconNdx.value == 0)
-                                accumulatedTime.value += currentSeconds() - startTime.value
-                            else
-                                startTime.value = currentSeconds()
-                            iconNdx.value = ++iconNdx.value % icons.size
-                            icon = icons[iconNdx.value]
-                        })
+                ElevatedButton(
+                    modifier = mdf,
+                    onClick = {
+                    if (iconNdx.value == 0)
+                        accumulatedTime.value += currentSeconds() - startTime.value
+                    else
+                        startTime.value = currentSeconds()
+                    iconNdx.value = ++iconNdx.value % icons.size
+                    icon = icons[iconNdx.value]
+                }){
+                    Icon(
+                        icon,
+                        contentDescription = "Pause")
+                }
             }
             AnimatedVisibility(
                 visible = battery.isNotEmpty(),

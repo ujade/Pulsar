@@ -9,9 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -57,11 +58,6 @@ private fun Preview(){
     }
 }
 
-//class DeviceDiscoverVM : ViewModel(){
-//    SnapshotStateList<DevInfo>
-//}
-
-
 @SuppressLint("MissingPermission")
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -72,8 +68,8 @@ fun DeviceDiscoverScreen() {
             horizontalAlignment = Alignment.CenterHorizontally)
         {
             Column(horizontalAlignment = Alignment.CenterHorizontally){
-                Text(text = "Looking for heart rate monitors around", style=MaterialTheme.typography.h6)
-                Text(text = "click on a found device to use it", style=MaterialTheme.typography.subtitle1 )
+                Text(text = "Looking for heart rate monitors around", style=MaterialTheme.typography.titleLarge)
+                Text(text = "click on a found device to use it", style=MaterialTheme.typography.titleMedium )
             }
             val error = remember{ mutableStateOf("") }
             val devList = remember{ mutableStateListOf<DeviceListElement>() }
@@ -96,7 +92,7 @@ fun DeviceDiscoverScreen() {
             }
             DevList(devList = devList)
             if (error.value.isNotEmpty())
-                Text(error.value, color= MaterialTheme.colors.error, modifier= Modifier.padding(vertical=5.dp))
+                Text(error.value, color= MaterialTheme.colorScheme.error, modifier= Modifier.padding(vertical=5.dp))
         }
     }
 }
@@ -123,14 +119,16 @@ fun DevList(devList: SnapshotStateList<DeviceListElement>){
 @Composable
 fun DevListItem(info: DeviceListElement){
     Card(
-        elevation=2.dp,
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 5.dp
+        ),
         modifier = Modifier
             .clickable { info.onClick() }
             .fillMaxWidth())
     {
         Column(Modifier.padding(5.dp)) {
-            Text(info.name, fontWeight = FontWeight.Bold, style=MaterialTheme.typography.subtitle1)
-            Text(info.macAddress, style=MaterialTheme.typography.subtitle2)
+            Text(info.name, fontWeight = FontWeight.Bold, style=MaterialTheme.typography.titleMedium)
+            Text(info.macAddress, style=MaterialTheme.typography.titleSmall)
         }
     }
 }
