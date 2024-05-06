@@ -255,7 +255,7 @@ private fun MainUI() {
         var biggerTextSize = 0f
         var smallerTextSize = 0f
         val recalcTextSize = {
-            biggerTextSize = spHeight * 0.35f
+            biggerTextSize = spHeight * 0.50f
             smallerTextSize = biggerTextSize * 0.5f
         }
         recalcTextSize()
@@ -276,8 +276,9 @@ private fun MainUI() {
         }
         Column(
             Modifier
-                .fillMaxWidth(),
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             val pulse = remember{ mutableStateOf("---") }
             val time = remember{ mutableStateOf("---") }
