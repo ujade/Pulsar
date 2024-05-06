@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.BluetoothSearching
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.runtime.*
@@ -123,7 +124,7 @@ private fun MainUI() {
             onClick = { navController.navigate(Screens.devList) }
         ){
             Icon(
-                Icons.Default.Contactless,
+                Icons.AutoMirrored.Filled.BluetoothSearching,
                 contentDescription = "List of available BLE devices",
             )
         }
