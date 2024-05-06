@@ -1,5 +1,6 @@
 package com.ds.pulsar
 
+import android.app.Activity
 import android.graphics.Paint
 import android.graphics.Rect
 import android.os.Bundle
@@ -13,17 +14,35 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.EaseInOutQuad
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.BluetoothSearching
+import androidx.compose.material.icons.filled.BatteryStd
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.BluetoothSearching
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,11 +50,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.beepiz.bluetooth.gattcoroutines.ConnectionClosedException
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.beepiz.bluetooth.gattcoroutines.ConnectionClosedException
 import com.ds.pulsar.ui.theme.PulsarTheme
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.coroutineScope
@@ -48,10 +68,14 @@ private lateinit
 var navController_: NavHostController
 val navController by ::navController_
 
+private lateinit
+var activity : Activity
+
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        activity = this
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContent {
             PulsarTheme {
@@ -128,6 +152,92 @@ private fun MainUI() {
                 contentDescription = "List of available BLE devices",
             )
         }
+        var askAgain by remember{
+            mutableStateOf(gotToAskAboutDisablingBt)
+        }
+        fun quit(disableBt: Boolean ){
+            if (disableBt)
+                btAdapter.disable()
+            activity.finish()
+        }
+        var showExitDialog by remember{ mutableStateOf(false) }
+        if (showExitDialog) {
+            Dialog(onDismissRequest = {}) {
+                Card {
+                    val mdf = Modifier.padding(8.dp)
+                    Text(
+                        modifier = mdf,
+                        text = "Turn off bluetooth?",
+                        style=MaterialTheme.typography.headlineLarge
+                    )
+                    Text(
+                        modifier = mdf,
+                        text = "Since I have turned on bluetooth, I can turn it off for ya",
+                    )
+                    Row(
+                        modifier = mdf,
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Checkbox(
+                            checked = !askAgain,
+                            onCheckedChange = {
+                                askAgain = !it
+                            }
+                        )
+                        Text("Don't ask again, always apply current choice")
+                    }
+                    Row(
+                        modifier = mdf.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ){
+                        ElevatedButton(
+                            onClick = {
+                                if (!askAgain) {
+                                    disableBt = true
+                                    gotToAskAboutDisablingBt = askAgain
+                                }
+                                quit(true)
+                            }
+                        ){
+                            Text("Turn it off")
+                        }
+                        ElevatedButton(
+                            onClick = {
+                                if (!askAgain) {
+                                    disableBt = false
+                                    gotToAskAboutDisablingBt = askAgain
+                                }
+                                quit(false)
+                            }
+                        ){
+                            Text("Leave it on")
+                        }
+                    }
+                }
+            }
+        }
+        ElevatedButton(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(6.dp),
+            onClick = {
+                if (mayDisableBt){
+                    if (gotToAskAboutDisablingBt) {
+                        showExitDialog = true
+                    }
+                    else{
+                        quit(disableBt)
+                    }
+                }
+                else
+                    quit(false)
+            }
+        ){
+            Icon(
+                Icons.Default.Close,
+                contentDescription = "Close the app",
+            )
+        }
         //region Digits
         val dm = LocalContext.current.resources.displayMetrics
         val pxPerSp = TypedValue.applyDimension(
@@ -200,17 +310,16 @@ private fun MainUI() {
             val currentSeconds = {
                 System.currentTimeMillis() / 1000
             }
-            val icons = arrayOf(Icons.Default.Pause, Icons.Default.PlayArrow )
-            val iconNdx = rememberSaveable{ mutableStateOf(0) }
-            val startTime = rememberSaveable{ mutableStateOf( currentSeconds() ) }
-            val accumulatedTime = rememberSaveable{ mutableStateOf( 0L ) }
+            var iconNdx by rememberSaveable{ mutableStateOf(0) }
+            var startTime by rememberSaveable{ mutableStateOf( currentSeconds() ) }
+            var accumulatedTime by rememberSaveable{ mutableStateOf( 0L ) }
             LaunchedEffect(null ) {
                 while (true) {
                     delay(950)
-                    if ( iconNdx.value != 0 )
+                    if ( iconNdx != 0 )
                         continue
-                    val td = accumulatedTime.value +
-                            currentSeconds() - startTime.value
+                    val td = accumulatedTime +
+                            currentSeconds() - startTime
                     val h = td / 3600
                     val m = (td % 3600) / 60
                     val s = td % 60
@@ -222,33 +331,36 @@ private fun MainUI() {
             }
             Text(text = pulse.value, fontSize = biggerTextSize.sp)
             Text(text = time.value, fontSize = smallerTextSize.sp)
-            Row(){
+            Row{
                 val mdf = Modifier
                     .padding(horizontal = 32.dp, vertical = 6.dp)
                 ElevatedButton(
                     modifier = mdf,
                     onClick = {
-                            accumulatedTime.value = 0
-                            startTime.value = currentSeconds()
-                            iconNdx.value = 0
-                }){
+                            accumulatedTime = 0
+                            startTime = currentSeconds()
+                            iconNdx = 0
+                    }
+                ){
                     Icon(
                         Icons.Default.RestartAlt,
                         contentDescription = "Reset")
                 }
-                var icon = icons[iconNdx.value]
+                val icons by remember{
+                    mutableStateOf( arrayOf(Icons.Default.Pause, Icons.Default.PlayArrow ) )
+                }
                 ElevatedButton(
                     modifier = mdf,
                     onClick = {
-                    if (iconNdx.value == 0)
-                        accumulatedTime.value += currentSeconds() - startTime.value
-                    else
-                        startTime.value = currentSeconds()
-                    iconNdx.value = ++iconNdx.value % icons.size
-                    icon = icons[iconNdx.value]
-                }){
+                        if (iconNdx == 0)
+                            accumulatedTime += currentSeconds() - startTime
+                        else
+                            startTime = currentSeconds()
+                        iconNdx = ++iconNdx % icons.size
+                    }
+                ){
                     Icon(
-                        icon,
+                        icons[iconNdx],
                         contentDescription = "Pause")
                 }
             }

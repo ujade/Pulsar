@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.ds.pulsar.btAdapter
 
 @Composable
 fun EnsureBtIsOn(whenBtIsOn: @Composable ()->Unit ) {
@@ -68,7 +67,12 @@ fun EnsureBtIsOn(whenBtIsOn: @Composable ()->Unit ) {
         {
             val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
             Text("Got to enable Bluetooth", Modifier.padding(all = 10.dp))
-            ElevatedButton(onClick = { launcher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)) }) {
+            ElevatedButton(
+                onClick = {
+                    launcher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+                    mayDisableBt = true
+                }
+            ) {
                 Text("Aye, let's do it")
             }
         }

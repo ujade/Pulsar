@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 
 
 private val DarkColorPalette = darkColorScheme(
@@ -13,7 +14,7 @@ private val DarkColorPalette = darkColorScheme(
 //        secondary = Teal200
 //    surface = Color.Black,
 //    onSurface = Color.White,
-//    background = Color.Black
+    background = Color.Black
 )
 
 private val LightColorPalette = lightColorScheme(
