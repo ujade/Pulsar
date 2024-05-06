@@ -31,10 +31,10 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.beepiz.bluetooth.gattcoroutines.ConnectionClosedException
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import com.ds.pulsar.ui.theme.PulsarTheme
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.coroutineScope
@@ -56,8 +56,8 @@ class MainActivity : ComponentActivity() {
             PulsarTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    navController_ = rememberAnimatedNavController()
-                    AnimatedNavHost(navController = navController, startDestination = Screens.main) {
+                    navController_ = rememberNavController()
+                    NavHost(navController = navController, startDestination = Screens.main) {
                         val durationMs = 700
                         val animSpec = tween<IntOffset>(durationMs, easing = EaseInOutQuad)
                         composable(
