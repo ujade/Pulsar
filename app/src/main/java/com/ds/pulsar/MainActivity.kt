@@ -278,7 +278,7 @@ private fun MainUI() {
             Modifier
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
             val pulse = remember{ mutableStateOf("---") }
             val time = remember{ mutableStateOf("---") }
