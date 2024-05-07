@@ -7,6 +7,10 @@ import android.content.Intent
 import android.content.IntentFilter
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -60,24 +64,28 @@ fun EnsureBtIsOn(whenBtIsOn: @Composable ()->Unit ) {
         }
     }
 
-    if (!isBluetoothEnabled.value){
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally)
-        {
-            val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
-            Text("Got to enable Bluetooth", Modifier.padding(all = 10.dp))
-            ElevatedButton(
-                onClick = {
-                    launcher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
-                    mayDisableBt = true
+    AnimatedContent(
+        targetState = isBluetoothEnabled.value,
+    ) { isBtEnabled ->
+        if (!isBtEnabled) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                val launcher =
+                    rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
+                Text("Got to enable Bluetooth", Modifier.padding(all = 10.dp))
+                ElevatedButton(
+                    onClick = {
+                        launcher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+                        mayDisableBt = true
+                    }
+                ){
+                    Text("Aye, let's do it")
                 }
-            ) {
-                Text("Aye, let's do it")
             }
+        } else {
+            whenBtIsOn()
         }
-    }
-    else {
-        whenBtIsOn()
     }
 }

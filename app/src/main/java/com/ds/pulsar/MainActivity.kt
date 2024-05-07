@@ -10,7 +10,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.EaseInOutQuad
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn

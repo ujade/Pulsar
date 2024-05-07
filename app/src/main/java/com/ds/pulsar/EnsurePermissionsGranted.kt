@@ -1,7 +1,7 @@
 package com.ds.pulsar
 
 import android.Manifest
-import android.os.Build
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -17,7 +17,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun EnsurePermissionsGranted( whenGrantedContend: @Composable () -> Unit ){
+fun EnsurePermissionsGranted(whenGranted: @Composable () -> Unit ){
     val requiredPermissions = rememberMultiplePermissionsState(
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 //            listOf(
@@ -32,19 +32,20 @@ fun EnsurePermissionsGranted( whenGrantedContend: @Composable () -> Unit ){
             )
 //        }
     )
-
-    if (!requiredPermissions.allPermissionsGranted) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally)
-        {
-            Text("The permissions are required for this app to function.", Modifier.padding(all = 10.dp))
-            ElevatedButton(onClick = { requiredPermissions.launchMultiplePermissionRequest() }) {
-                Text(stringResource(R.string.request_permissions))
+    AnimatedContent(targetState = requiredPermissions.allPermissionsGranted) { permissionsGranted ->
+        if (!permissionsGranted) {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally)
+            {
+                Text("The permissions are required for this app to function.", Modifier.padding(all = 10.dp))
+                ElevatedButton(onClick = { requiredPermissions.launchMultiplePermissionRequest() }) {
+                    Text(stringResource(R.string.request_permissions))
+                }
             }
         }
-    }
-    else{
-        whenGrantedContend()
+        else{
+            whenGranted()
+        }
     }
 }
