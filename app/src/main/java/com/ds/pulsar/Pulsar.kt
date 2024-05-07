@@ -9,7 +9,7 @@ import android.content.SharedPreferences
 lateinit
 var app: Pulsar
 val preferences: SharedPreferences by lazy{ app.getSharedPreferences("prefs", Context.MODE_PRIVATE) }
-val btAdapter: BluetoothAdapter by lazy{ (app.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).getAdapter() }
+val btAdapter: BluetoothAdapter by lazy{ (app.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter }
 
 var mayDisableBt = false
 var disableBt by PreferenceDelegate("auto_disable_bt", false)

@@ -35,9 +35,7 @@ class DeviceListElement(
 
         other as DeviceListElement
 
-        if (macAddress != other.macAddress) return false
-
-        return true
+        return macAddress == other.macAddress
     }
 
     override fun hashCode(): Int {
@@ -59,7 +57,6 @@ private fun Preview(){
 }
 
 @SuppressLint("MissingPermission")
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun DeviceDiscoverScreen() {
     WhenBtIsReady {
@@ -77,7 +74,7 @@ fun DeviceDiscoverScreen() {
                 searchForBleDevices().collect {
                     when (it) {
                         is DevInfo -> {
-                            var name = it.dev.name?: "???"
+                            val name = it.dev.name?: "???"
                             val dev = DeviceListElement(name, it.dev.address){
                                 heartRateStream.setSource(it.dev)
                                 navController.popBackStack()

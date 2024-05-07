@@ -60,7 +60,7 @@ fun EnsureBtIsOn(whenBtIsOn: @Composable ()->Unit ) {
         }
     }
 
-    if (isBluetoothEnabled.value == false){
+    if (!isBluetoothEnabled.value){
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally)

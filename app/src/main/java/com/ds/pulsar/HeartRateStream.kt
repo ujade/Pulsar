@@ -11,10 +11,7 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.lang.System.currentTimeMillis
-import java.lang.Thread.sleep
 import java.util.concurrent.TimeoutException
-
-private const val MAC_ADDRESS = "dev_mac"
 
 val heartRateStream: HeartRateStream by lazy{
     HeartRateStream()

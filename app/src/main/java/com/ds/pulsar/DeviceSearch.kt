@@ -16,19 +16,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 
-sealed interface SearchResult{
-}
+sealed interface SearchResult
 
 class Failure(val why: String) : SearchResult
 
 data class DevInfo(
     val dev: BluetoothDevice,
-) : SearchResult {
-
-}
+) : SearchResult
 
 
-val btScanErrors = mapOf<Int, String>(
+val btScanErrors = mapOf(
     SCAN_FAILED_ALREADY_STARTED to "Fails to start scan as BLE scan with the same settings is already started by the app.",
     SCAN_FAILED_APPLICATION_REGISTRATION_FAILED to "Fails to start scan as app cannot be registered.",
     SCAN_FAILED_FEATURE_UNSUPPORTED to "Fails to start power optimized scan as this feature is not supported.",
@@ -40,7 +37,7 @@ val btScanErrors = mapOf<Int, String>(
 
 @SuppressLint("MissingPermission")
 fun searchForBleDevices() : Flow<SearchResult> {
-    return callbackFlow<SearchResult> {
+    return callbackFlow {
         val btLeScanner = btAdapter.bluetoothLeScanner
         val scanSettings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setMatchMode(MATCH_MODE_STICKY).build()
         val filters = listOf( ScanFilter.Builder().setServiceUuid(
