@@ -159,11 +159,11 @@ private fun MainUI() {
         fun quit(disableBt: Boolean ){
             if (disableBt)
                 btAdapter.disable()
-            activity.finish()
+            activity.finishAndRemoveTask()
         }
         var showExitDialog by remember{ mutableStateOf(false) }
         if (showExitDialog) {
-            Dialog(onDismissRequest = {}) {
+            Dialog(onDismissRequest = {showExitDialog = false}) {
                 Card {
                     val mdf = Modifier.padding(8.dp)
                     Text(
@@ -173,7 +173,9 @@ private fun MainUI() {
                     )
                     Text(
                         modifier = mdf,
-                        text = "Since I have turned on bluetooth, I can turn it off for ya",
+                        text = """
+                            Since I have turned on bluetooth, I can turn it off for ya.
+                            But I will only ever do it, when I was the one, who have turned it on.""".trimIndent(),
                     )
                     Row(
                         modifier = mdf,
