@@ -97,7 +97,8 @@ class MainActivity : ComponentActivity() {
                                     AnimatedContentTransitionScope.SlideDirection.Right,
                                     animationSpec = animSpec
                                 )
-                            }) { MainScreen() }
+                            }
+                        ) { MainScreen() }
                         composable(
                             Screens.devList,
                             enterTransition = {
@@ -111,7 +112,8 @@ class MainActivity : ComponentActivity() {
                                     AnimatedContentTransitionScope.SlideDirection.Left,
                                     animationSpec = animSpec
                                 )
-                            }) { DeviceDiscoverScreen() }
+                            }
+                        ) { DeviceDiscoverScreen() }
                     }
                 }
             }

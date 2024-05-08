@@ -47,7 +47,6 @@ class HeartRateStream {
     @com.beepiz.bluetooth.gattcoroutines.ExperimentalBleGattCoroutinesCoroutinesApi
     suspend fun heartRateFlow() = flow<DataFromDevice> {
         val deviceConnection = GattConnection(bluetoothDevice = dev!!)
-        var characHr: BluetoothGattCharacteristic? = null
         try {
             var lastTimeDataReceived = currentTimeMillis()
             CoroutineScope(currentCoroutineContext()).launch {
@@ -72,7 +71,7 @@ class HeartRateStream {
             deviceConnection.discoverServices()
             val serviceHrm =
                 deviceConnection.getService("0000180d-0000-1000-8000-00805f9b34fb".uuid)
-            characHr =
+            val characHr =
                 serviceHrm?.getCharacteristic("00002a37-0000-1000-8000-00805f9b34fb".uuid)
             var characBattery: BluetoothGattCharacteristic? = null
             var lastTimeTriedToFindCharacBattery = 0L
