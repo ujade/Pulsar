@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedButton
@@ -142,10 +143,11 @@ fun MainScreen() {
 @Composable
 private fun MainUI() {
     BoxWithConstraints {
+        val topButtonPadding = 6.dp
         ElevatedButton(
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(6.dp),
+                .padding(topButtonPadding),
             onClick = { navController.navigate(Screens.devList) }
         ){
             Icon(
@@ -222,7 +224,7 @@ private fun MainUI() {
         ElevatedButton(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(6.dp),
+                .padding(topButtonPadding),
             onClick = {
                 if (mayDisableBt){
                     if (gotToAskAboutDisablingBt) {
@@ -242,6 +244,7 @@ private fun MainUI() {
             )
         }
         //region Digits
+        val landscape = maxWidth > maxHeight
         val dm = LocalContext.current.resources.displayMetrics
         val pxPerSp = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_SP,
@@ -258,7 +261,7 @@ private fun MainUI() {
         var biggerTextSize = 0f
         var smallerTextSize = 0f
         val recalcTextSize = {
-            biggerTextSize = spHeight * 0.50f
+            biggerTextSize = spHeight * 0.45f
             smallerTextSize = biggerTextSize * 0.5f
         }
         recalcTextSize()
@@ -279,7 +282,12 @@ private fun MainUI() {
         }
         Column(
             Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(top =
+                    if (landscape)
+                        0.dp
+                    else
+                        topButtonPadding + ButtonDefaults.MinHeight),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
