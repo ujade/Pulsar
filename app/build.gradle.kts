@@ -16,8 +16,8 @@ android {
         applicationId = "ds.pulsar"
         minSdk = 28
         targetSdk = 30 // check EnsurePermissionGranted.kt
-        versionCode = 6
-        versionName = "1.5"
+        versionCode = 7
+        versionName = "7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
