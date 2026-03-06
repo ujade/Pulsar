@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattCharacteristic.*
 import com.beepiz.bluetooth.gattcoroutines.GattConnection
+import com.ds.pulsar.widget.HrWidget
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.conflate
@@ -132,6 +133,7 @@ class HeartRateStream {
         finally {
             deviceConnection.close() // Also triggers disconnect by default.
             println("device collection finished")
+            HrWidget.sendHrUpdate(activity, bpm = 0)  // global activity works for now
         }
     }.conflate().flowOn(Dispatchers.IO)
 }

@@ -57,6 +57,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.beepiz.bluetooth.gattcoroutines.ConnectionClosedException
 import com.ds.pulsar.ui.theme.PulsarTheme
+import com.ds.pulsar.widget.HrWidget
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -68,7 +69,7 @@ private lateinit
 var navController_: NavHostController
 val navController by ::navController_
 
-private lateinit
+lateinit
 var activity : Activity
 
 class MainActivity : ComponentActivity() {
@@ -304,6 +305,7 @@ private fun MainUI() {
                                 pulse.value = it.pulse.toString()
                                 if (it.batteryLevel != null)
                                     battery = it.batteryLevel.toString() + "%"
+                                HrWidget.sendHrUpdate(activity, bpm = pulse.value.toInt())
                             }
                         }
                     } catch (e: Exception) {

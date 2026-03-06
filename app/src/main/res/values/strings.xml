@@ -2,4 +2,5 @@
     <string name="app_name">Pulsar</string>
     <string name="title_activity_main2">MainActivity2</string>
     <string name="request_permissions">Grant permissions</string>
+    <string name="widget_description">Pulsar live heart rate widget</string>
 </resources>
